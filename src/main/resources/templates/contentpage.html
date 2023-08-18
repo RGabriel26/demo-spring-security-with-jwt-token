@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Login</title>
+</head>
+<body>
+<p th:text="${msg}"></p>
+<table>
+    <tr th:each="user: ${users}" style="display: flex; flex-direction: column">
+        <td  th:text="${user.firstname}" />
+        <td th:text="${user.lastname}" />
+        <td th:text="${user.email}" />
+        <td th:text="${user.password}" />
+    </tr>
+</table>
+
+</body>
+</html>
