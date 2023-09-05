@@ -1,77 +1,87 @@
 package com.example.demomakebymespringsecuritywithjwt.security.jwt;
 
-
-import io.jsonwebtoken.*;
-import jakarta.annotation.PostConstruct;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
-import java.util.Base64;
+import java.security.Key;
 import java.util.Date;
 
 @Component
 public class JwtTokenProvider {
 
-    @Value("${security.jwt.token.secret-key:secret}")
-    private String secretKey = "secret";
+    private String secretKey = "secretesgrbhbgsyerbgywrthi54t5849hweajrnfgrg1234";
 
-    @Value("${security.jwt.token.expire-length:3600000}")
-    private long validityInMiliseconds  = 3600000; // 1 ora
+    private int validityInMilliseconds = 3600000; // adica o ora / 60 de minute
 
     @Autowired
-    private UserDetailsService userDetailsService;
+    private InfoUserDetailsService userDetailsService;
 
-    @PostConstruct
-    protected void init(){
-        secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
+    //generarea unei semnaturi de tip key pentru semnarea tokenului
+    private Key getSigningKey() {
+        byte[] keyBytes = Decoders.BASE64.decode(this.secretKey);
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String createToken (String username){
-        Claims claims = Jwts.claims().setSubject(username);
+    public String createToken(String email){
+        Claims claims = Jwts.claims().setSubject(email);
 
-        return Jwts.builder()
+        Date now = new Date();
+        Date validity = new Date(now.getTime() + validityInMilliseconds);
+
+        String token = Jwts.builder()
                 .setClaims(claims)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(new Date().getTime() + validityInMiliseconds))
-                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .setIssuedAt(now)
+                .setExpiration(validity)
+                .signWith(getSigningKey())
                 .compact();
+
+        System.out.println("Tokenul este pentru utilizatorul: "+ email +" este: " + token);
+
+        return token;
     }
 
-    public Authentication getAuthentication(String token) {
-        UserDetails userDetails = this.userDetailsService.loadUserByUsername(getUsername(token));
+
+    //Crearea unei instante de tip Authentication care pastreaza persoana logata
+    //CRED CA TREBUIA SA ADAUG ROLURI PENTRU A LE ADAUGA CA getAuthorities
+    public Authentication getAuthentication(String token){
+        UserDetails userDetails = userDetailsService.loadUserByUsername(getEmail(token));
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
-    public String getUsername(String token){
-        return Jwts.parserBuilder()
-                .setSigningKey(secretKey).build().parseClaimsJwt(token).getBody().getSubject();
+    //parsam tokenul pentru a obtine emailul
+    public String getEmail(String token){
+        return Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJwt(token).getBody().getSubject();
     }
 
-    //cu aceasta metoda luam tokenul din requestul http
-    public String getToken(HttpServletRequest request){
-        String bearerToken = request.getHeader("Authorization");
+    //metoda care preia tokenul jwt din headerul http
+    public String getToken(HttpServletRequest httpRequest){
+        String bearerToken = httpRequest.getHeader("Authorization");
         if(bearerToken != null && bearerToken.startsWith("Bearer ")){
-            return bearerToken.substring(7,bearerToken.length() - 1);
+            return bearerToken.substring(7);
         }
         return null;
     }
 
+    //pentru verificarea daca tokenul nu este exprirat
     public boolean validateToken(String token){
         try{
-            Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token);
-            if(claims.getBody().getExpiration().before(new Date())){
-                return false;
-            }
-            return true;
-        }catch (JwtException | IllegalArgumentException e) {
+            Date expTime = new Date(Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJwt(token).getBody().getExpiration().getTime());
+            return new Date().before(expTime);
+        }catch (JwtException | IllegalArgumentException e){
             throw e;
         }
     }
+
+
 
 }

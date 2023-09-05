@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -36,7 +37,6 @@ public class ContentController {
                 userRepository.findByEmail(email).getPassword());
         List<User> users = new LinkedList<>();
         users.add(user);
-        System.out.println(user.toString());
         model.addAttribute("users", users);
         return "contentpage.html";
     }
