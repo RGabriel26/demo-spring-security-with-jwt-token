@@ -4,16 +4,16 @@ import com.example.demomakebymespringsecuritywithjwt.security.jwt.JwtTokenProvid
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
+
+import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
@@ -23,18 +23,35 @@ public class WebSecurityConfiguration {
     private final JwtTokenProvider jwtTokenProvider;
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, MvcRequestMatcher.Builder mvc) throws Exception {
         http
-                .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(new AntPathRequestMatcher("/post/**")).permitAll()
-                        .requestMatchers(new AntPathRequestMatcher("/auth/**")).permitAll()
-                        .requestMatchers(new AntPathRequestMatcher("/content/**")).permitAll()
-                        .anyRequest().authenticated()
+                .securityMatchers((matchers) -> matchers
+                        .requestMatchers(
+                                mvc.pattern(HttpMethod.POST,"/post/**"),
+                                mvc.pattern(HttpMethod.GET,"/auth/**"),
+                                mvc.pattern("/h2/**")
+
+                        )
+
                 )
-                .apply(new JwtTokenFilterConfigurer(jwtTokenProvider));
+                .authorizeHttpRequests(authorize -> authorize
+                        .anyRequest().permitAll()
+
+                )
+//                .formLogin(Customizer.withDefaults())
+                .apply(new JwtTokenFilterConfigurer(jwtTokenProvider))
+
+        ;
+        http.httpBasic(withDefaults());
 
         return http.build();
     }
+
+    @Bean
+    MvcRequestMatcher.Builder mvc(HandlerMappingIntrospector introspector) {
+        return new MvcRequestMatcher.Builder(introspector);
+    }
+
 
 
     @Bean

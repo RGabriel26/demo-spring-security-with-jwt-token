@@ -21,4 +21,9 @@ public class AuthPages {
         model.addAttribute("user_for_register", new RegisterRequest());
         return "registerpage.html";
     }
+
+    @GetMapping("/token")
+    public String token(Model model){
+        return "index.html";
+    }
 }

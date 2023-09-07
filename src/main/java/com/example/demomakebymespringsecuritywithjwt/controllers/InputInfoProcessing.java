@@ -1,21 +1,35 @@
 package com.example.demomakebymespringsecuritywithjwt.controllers;
 
-import com.example.demomakebymespringsecuritywithjwt.Service.UserService;
 import com.example.demomakebymespringsecuritywithjwt.models.User;
 import com.example.demomakebymespringsecuritywithjwt.repositoy.UserRepository;
 import com.example.demomakebymespringsecuritywithjwt.models.request.RegisterRequest;
+import com.example.demomakebymespringsecuritywithjwt.security.jwt.JwtTokenProvider;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+
 
 @Controller
 @RequestMapping("/post")
 public class InputInfoProcessing {
 
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
+
+    private JwtTokenProvider jwtTokenProvider;
+
+    public InputInfoProcessing(JwtTokenProvider jwtTokenProvider) {
+        this.jwtTokenProvider = jwtTokenProvider;
+    }
 
 //    private final UserService userService;
 //
@@ -25,6 +39,7 @@ public class InputInfoProcessing {
 
 
     @PostMapping("/requestInfoLogin")
+
 //    public String requestInfoLogin(@ModelAttribute LoginRequest userRequest, Model model,
 //                                   final RedirectAttributes redirectAttributes){
 //        if(userRepository.existsByEmail(userRequest.getEmail())){
@@ -39,15 +54,31 @@ public class InputInfoProcessing {
 //        redirectAttributes.addFlashAttribute("msg", "Nu s-a putut conecta.");
 //        return "redirect:/auth/login";
 //    }
-    public String requestInfoLogin( @RequestParam String email,
-                                    @RequestParam String password,
-                                    Model model,
-                                   final RedirectAttributes redirectAttributes){
-        if(userRepository.existsByEmail(email)){
-            if(userRepository.findByEmail(email).getPassword().equals(password)){
+
+    public String requestInfoLogin(
+            //@ModelAttribute LoginRequest inputLog,
+            @RequestParam String email,
+            @RequestParam String password,
+            Model model
+            ,final RedirectAttributes redirectAttributes
+    ) {
+        System.out.println(email);
+        String token = "404";
+        if (userRepository.existsByEmail(email)) {
+            if (userRepository.findByEmail(email).getPassword().equals(password)) {
                 model.addAttribute("msg", "Conectat cu succes.");
-                System.out.println(email);
-                return new ContentController(userRepository).infoAccount(model, email);
+
+                //generare token
+                token = jwtTokenProvider.createToken(email);
+
+                //crearea instantei autenticata si adaugarea acesteia in securitycontexholder
+                Authentication auth = jwtTokenProvider.getAuthentication(token);
+                SecurityContextHolder.getContext().setAuthentication(auth);
+
+
+                //return new ContentController(userRepository).infoAccount(model, token);
+                model.addAttribute("token", token);
+                return "index.html";
             }
         }
 //        model.addAttribute("msg", "Nu s-a putut conecta.");
@@ -72,7 +103,7 @@ public class InputInfoProcessing {
         userRepository.save(user);
 //        model.addAttribute("msg", "Inregistrat cu succes!");
 //        return AuthPages.login(model);
-        redirectAttributes.addFlashAttribute("msg", "Email folosit deja pentru alt utilizator.");
+        redirectAttributes.addFlashAttribute("msg", "Inregistrat cu succes!");
         return "redirect:/auth/login";
     }
 

@@ -2,6 +2,7 @@ package com.example.demomakebymespringsecuritywithjwt.controllers;
 
 import com.example.demomakebymespringsecuritywithjwt.models.User;
 import com.example.demomakebymespringsecuritywithjwt.repositoy.UserRepository;
+import com.example.demomakebymespringsecuritywithjwt.security.jwt.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,13 +21,20 @@ public class ContentController {
     //am injectat repository ul prin constructor
     private final UserRepository userRepository;
 
+    private JwtTokenProvider jwtTokenProvider;
+
     @Autowired
     public ContentController(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
     @GetMapping("/user")
-    public String infoAccount(Model model, String email){
+    public String infoAccount(Model model, String token){
+
+        //obtinere email din token
+
+        String email = jwtTokenProvider.getEmail(token);
+
         if(email == null){
             model.addAttribute("msg", "Mai intai logheaza-te.");
             return AuthPages.login(model);
@@ -41,3 +49,8 @@ public class ContentController {
         return "contentpage.html";
     }
 }
+
+
+
+//ACTUALIZEAZA SECURITYCONTEXHOLDER
+

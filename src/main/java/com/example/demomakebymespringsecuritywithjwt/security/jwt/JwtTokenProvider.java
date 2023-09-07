@@ -54,15 +54,23 @@ public class JwtTokenProvider {
     //Crearea unei instante de tip Authentication care pastreaza persoana logata
     //CRED CA TREBUIA SA ADAUG ROLURI PENTRU A LE ADAUGA CA getAuthorities
     public Authentication getAuthentication(String token){
+        System.out.println("JwtTokenProvider - getAuthentication");
         UserDetails userDetails = userDetailsService.loadUserByUsername(getEmail(token));
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
     //parsam tokenul pentru a obtine emailul
-    public String getEmail(String token){
-        return Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJwt(token).getBody().getSubject();
+    public String getEmail(String token) {
+        // return Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJwt(token).getBody().getSubject();
+        String subject = Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJwt(token)
+                .getBody()
+                .getSubject();
+        System.out.println("Obtinerea subiectului din token: " + subject);
+        return subject;
     }
-
     //metoda care preia tokenul jwt din headerul http
     public String getToken(HttpServletRequest httpRequest){
         String bearerToken = httpRequest.getHeader("Authorization");
@@ -78,6 +86,7 @@ public class JwtTokenProvider {
             Date expTime = new Date(Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJwt(token).getBody().getExpiration().getTime());
             return new Date().before(expTime);
         }catch (JwtException | IllegalArgumentException e){
+            System.out.println("JwtTokenProvider - validateToken");
             throw e;
         }
     }

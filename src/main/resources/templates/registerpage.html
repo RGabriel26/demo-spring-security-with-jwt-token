@@ -7,7 +7,7 @@
 
 <p th:text="${msg}"></p>
 
-<form action="#" th:action="@{/requestInfoRegister}" th:object="${user_for_register}" method="post" >
+<form action="#" th:action="@{/post/requestInfoRegister}" th:object="${user_for_register}" method="post" >
     <label>
         <input type="text" th:field="*{firstname}"  placeholder="Enter firstname ..." />
     </label>
