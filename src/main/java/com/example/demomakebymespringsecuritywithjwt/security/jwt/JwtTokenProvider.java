@@ -65,7 +65,7 @@ public class JwtTokenProvider {
         String subject = Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
                 .build()
-                .parseClaimsJwt(token)
+                .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
         System.out.println("Obtinerea subiectului din token: " + subject);

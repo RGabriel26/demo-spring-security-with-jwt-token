@@ -31,30 +31,8 @@ public class InputInfoProcessing {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
-//    private final UserService userService;
-//
-//    public InputInfoProcessing(UserService userService) {
-//        this.userService = userService;
-//    }
-
 
     @PostMapping("/requestInfoLogin")
-
-//    public String requestInfoLogin(@ModelAttribute LoginRequest userRequest, Model model,
-//                                   final RedirectAttributes redirectAttributes){
-//        if(userRepository.existsByEmail(userRequest.getEmail())){
-//            if(userRepository.findByEmail(userRequest.getEmail()).getPassword().equals(userRequest.getPassword())){
-//                model.addAttribute("msg", "Conectat cu succes.");
-//                System.out.println(userRequest.getEmail());
-//                return new ContentController(userRepository).infoAccount(model, userRequest.getEmail());
-//            }
-//        }
-////        model.addAttribute("msg", "Nu s-a putut conecta.");
-////        return AuthPages.login(model);
-//        redirectAttributes.addFlashAttribute("msg", "Nu s-a putut conecta.");
-//        return "redirect:/auth/login";
-//    }
-
     public String requestInfoLogin(
             //@ModelAttribute LoginRequest inputLog,
             @RequestParam String email,
@@ -78,7 +56,8 @@ public class InputInfoProcessing {
 
                 //return new ContentController(userRepository).infoAccount(model, token);
                 model.addAttribute("token", token);
-                return "index.html";
+                return new ContentController(userRepository, jwtTokenProvider).infoAccount(model, token);
+                //return "index.html";
             }
         }
 //        model.addAttribute("msg", "Nu s-a putut conecta.");
@@ -95,14 +74,10 @@ public class InputInfoProcessing {
                 userRequest.getEmail(),
                 userRequest.getPassword());
         if(userRepository.existsByEmail(userRequest.getEmail())){
-//            model.addAttribute("msg", "Email folosit deja pentru alt utilizator.");
-//            return AuthPages.register(model);
             redirectAttributes.addFlashAttribute("msg", "Email folosit deja pentru alt utilizator.");
             return "redirect:/auth/register";
         }
         userRepository.save(user);
-//        model.addAttribute("msg", "Inregistrat cu succes!");
-//        return AuthPages.login(model);
         redirectAttributes.addFlashAttribute("msg", "Inregistrat cu succes!");
         return "redirect:/auth/login";
     }

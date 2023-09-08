@@ -12,6 +12,10 @@ public class InfoUserDetailsService implements UserDetailsService {
 
     private UserRepository userRepository;
 
+    public InfoUserDetailsService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         //cautam in database contul dupa email ul dat

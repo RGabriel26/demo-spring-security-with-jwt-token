@@ -4,6 +4,7 @@ import com.example.demomakebymespringsecuritywithjwt.security.jwt.JwtTokenProvid
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -22,20 +23,31 @@ public class WebSecurityConfiguration {
 
     private final JwtTokenProvider jwtTokenProvider;
 
+
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, MvcRequestMatcher.Builder mvc) throws Exception {
+    @Order(1)
+    public SecurityFilterChain allAccesChain(HttpSecurity http, MvcRequestMatcher.Builder mvc) throws Exception{
         http
                 .securityMatchers((matchers) -> matchers
                         .requestMatchers(
                                 mvc.pattern(HttpMethod.POST,"/post/**"),
                                 mvc.pattern(HttpMethod.GET,"/auth/**"),
                                 mvc.pattern("/h2/**")
-
                         )
 
                 )
+
+                .httpBasic(withDefaults());
+
+        return http.build();
+    }
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
                 .authorizeHttpRequests(authorize -> authorize
-                        .anyRequest().permitAll()
+//                        .anyRequest().authenticated()
+                          .anyRequest().permitAll()
 
                 )
 //                .formLogin(Customizer.withDefaults())
