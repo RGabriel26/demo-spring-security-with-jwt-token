@@ -37,17 +37,14 @@ public class InputInfoProcessing {
             //@ModelAttribute LoginRequest inputLog,
             @RequestParam String email,
             @RequestParam String password,
-            Model model
-            ,final RedirectAttributes redirectAttributes
+            final RedirectAttributes redirectAttributes
     ) {
         System.out.println(email);
-        String token = "404";
         if (userRepository.existsByEmail(email)) {
             if (userRepository.findByEmail(email).getPassword().equals(password)) {
-                model.addAttribute("msg", "Conectat cu succes.");
 
                 //generare token
-                token = jwtTokenProvider.createToken(email);
+                String token = jwtTokenProvider.createToken(email);
 
                 //crearea instantei autenticata si adaugarea acesteia in securitycontexholder
                 Authentication auth = jwtTokenProvider.getAuthentication(token);
@@ -55,13 +52,18 @@ public class InputInfoProcessing {
 
 
                 //return new ContentController(userRepository).infoAccount(model, token);
-                model.addAttribute("token", token);
-//                return new ContentController(userRepository, jwtTokenProvider).infoAccount(model, token);
-                return "index.html";
+                //return new ContentController(userRepository, jwtTokenProvider).infoAccount(model, token);
+
+//                model.addAttribute("token", token);
+//                return "index.html";
+
+                redirectAttributes.addFlashAttribute("token", token);
+                return "redirect:/auth/token";
             }
         }
 //        model.addAttribute("msg", "Nu s-a putut conecta.");
 //        return AuthPages.login(model);
+
         redirectAttributes.addFlashAttribute("msg", "Nu s-a putut conecta.");
         return "redirect:/auth/login";
     }
@@ -73,10 +75,12 @@ public class InputInfoProcessing {
                 userRequest.getLastname(),
                 userRequest.getEmail(),
                 userRequest.getPassword());
+
         if(userRepository.existsByEmail(userRequest.getEmail())){
             redirectAttributes.addFlashAttribute("msg", "Email folosit deja pentru alt utilizator.");
             return "redirect:/auth/register";
         }
+
         userRepository.save(user);
         redirectAttributes.addFlashAttribute("msg", "Inregistrat cu succes!");
         return "redirect:/auth/login";

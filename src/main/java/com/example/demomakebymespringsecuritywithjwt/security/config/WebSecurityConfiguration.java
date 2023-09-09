@@ -4,17 +4,11 @@ import com.example.demomakebymespringsecuritywithjwt.security.jwt.JwtTokenProvid
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
-
-import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
@@ -60,9 +54,6 @@ public class WebSecurityConfiguration {
 //        return http.build();
 //    }
 
-
-
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, HandlerMappingIntrospector introspector) throws Exception {
         MvcRequestMatcher.Builder mvcMatcherBuilder = new MvcRequestMatcher.Builder(introspector);
@@ -71,13 +62,14 @@ public class WebSecurityConfiguration {
                         authorizeHttpRequests
                                 .requestMatchers(mvcMatcherBuilder.pattern("/post/**")).permitAll()
                                 .requestMatchers(mvcMatcherBuilder.pattern("/auth/**")).permitAll()
-                                .requestMatchers(mvcMatcherBuilder.pattern("/h2/**")).permitAll()
                                 .requestMatchers(mvcMatcherBuilder.pattern("/content/**")).authenticated()
+                                .anyRequest().permitAll()
                 )
 //                .formLogin((fromLogin) ->  fromLogin
 //                                .loginPage("/auth/login")
 //
 //                )
+
                 .apply(new JwtTokenFilterConfigurer(jwtTokenProvider))
         ;
         return http.build();
@@ -90,10 +82,10 @@ public class WebSecurityConfiguration {
 
 
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(12);
-    }
+//    @Bean
+//    public PasswordEncoder passwordEncoder() {
+//        return new BCryptPasswordEncoder(12);
+//    }
 
 
 }

@@ -17,8 +17,6 @@ import java.util.List;
 @RequestMapping("/content")
 public class ContentController {
 
-    //problema rezolvata de chat gpt
-    //am injectat repository ul prin constructor
     @Autowired
     private final UserRepository userRepository;
 
@@ -34,23 +32,21 @@ public class ContentController {
 //    public String infoAccount(Model model, String token){
     public String infoAccount(Model model, HttpServletRequest req){
 
-        //obtinere email din token
         System.out.println("ContentController - infoAccount");
         System.out.println("ContentController - http requestul:" + req.getRequestURL());
+
+        //obtinere email din token
         String email = jwtTokenProvider.getEmail(jwtTokenProvider.getToken(req));
 
         User user = new User(userRepository.findByEmail(email).getFirstname(),
                 userRepository.findByEmail(email).getLastname(),
                 userRepository.findByEmail(email).getEmail(),
                 userRepository.findByEmail(email).getPassword());
+
         List<User> users = new LinkedList<>();
         users.add(user);
         model.addAttribute("users", users);
         return "contentpage.html";
     }
 }
-
-
-
-//ACTUALIZEAZA SECURITYCONTEXHOLDER
 

@@ -34,11 +34,12 @@ public class JwtFilterChain extends OncePerRequestFilter {
             System.out.println("JwtFilterChain - token valid: " + jwtTokenProvider.validateToken(token));
 
         }
+        System.out.println("JwtFilterChain");
         try{
             if (token != null && jwtTokenProvider.validateToken(token)) {
                 Authentication auth = jwtTokenProvider.getAuthentication(token);
                 SecurityContextHolder.getContext().setAuthentication(auth);
-                System.out.println("ContexHolder actualizat cu succes");
+                System.out.println("JwtFilterChain - ContexHolder actualizat cu succes");
             }
         } catch (CustomException ex) {
             //this is very important, since it guarantees the user is not authenticated at all

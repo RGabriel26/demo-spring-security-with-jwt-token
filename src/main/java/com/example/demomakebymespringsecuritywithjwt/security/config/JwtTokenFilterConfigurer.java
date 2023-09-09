@@ -1,7 +1,6 @@
 package com.example.demomakebymespringsecuritywithjwt.security.config;
 
 import com.example.demomakebymespringsecuritywithjwt.security.jwt.JwtTokenProvider;
-import org.springframework.security.config.annotation.SecurityBuilder;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.DefaultSecurityFilterChain;

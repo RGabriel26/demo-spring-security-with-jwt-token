@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class InfoUserDetailsService implements UserDetailsService {
 
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     public InfoUserDetailsService(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -22,7 +22,7 @@ public class InfoUserDetailsService implements UserDetailsService {
         User appUser = userRepository.findByEmail(email);
 
         if(appUser == null){
-            throw new UsernameNotFoundException("Nu am putut gasi un cont caruia sa ii corespunda email ul dat: " + email);
+            throw new UsernameNotFoundException("InfoUserDetailsService - Nu am putut gasi un cont caruia sa ii corespunda email ul dat: " + email);
         }
 
         return org.springframework.security.core.userdetails.User//

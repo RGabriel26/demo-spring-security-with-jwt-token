@@ -9,7 +9,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -19,10 +18,10 @@ import java.util.Date;
 @Component
 public class JwtTokenProvider {
 
-
-    private String secretKey = "secretesgrbhbgsyerbgywrthi54t58498ki8gabi26";
-
-    private int validityInMilliseconds =3600000; // adica o ora / 60 de minute
+    //folisit pentru a crea o semnatura unica pentru fiecare start al aplicatiei
+    private final long startApp = new Date().getTime();
+    private final String secretKey = "secretesgrbhbgsyerbgywrthi54t58498ki8gabi26" + startApp;
+    private final int validityInMilliseconds =3600000; // adica o ora / 60 de minute
 
     @Autowired
     private InfoUserDetailsService userDetailsService;
@@ -46,7 +45,7 @@ public class JwtTokenProvider {
                 .signWith(getSigningKey())
                 .compact();
 
-        System.out.println("Tokenul este pentru utilizatorul: "+ email +" este: " + token);
+        System.out.println("JwtTokenProvider - Tokenul este pentru utilizatorul: "+ email +" este: " + token);
 
         return token;
     }
@@ -69,11 +68,12 @@ public class JwtTokenProvider {
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
-        System.out.println("JwtTokenProvider - Obtinerea subiectului din token: " + subject);
+        System.out.println("JwtTokenProvider - Obtinerea email ului din token: " + subject);
         return subject;
     }
     //metoda care preia tokenul jwt din headerul http
     public String getToken(HttpServletRequest httpRequest){
+        System.out.println("JwtTokenProvider - obtinerea tokenului din httpRequest");
         String bearerToken = httpRequest.getHeader("Authorization");
         if(bearerToken != null && bearerToken.startsWith("Bearer ")){
             return bearerToken.substring(7);
