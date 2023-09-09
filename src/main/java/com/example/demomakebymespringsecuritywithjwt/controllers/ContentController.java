@@ -3,6 +3,7 @@ package com.example.demomakebymespringsecuritywithjwt.controllers;
 import com.example.demomakebymespringsecuritywithjwt.models.User;
 import com.example.demomakebymespringsecuritywithjwt.repositoy.UserRepository;
 import com.example.demomakebymespringsecuritywithjwt.security.jwt.JwtTokenProvider;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,16 +31,13 @@ public class ContentController {
     }
 
     @GetMapping("/user")
-    public String infoAccount(Model model, String token){
+//    public String infoAccount(Model model, String token){
+    public String infoAccount(Model model, HttpServletRequest req){
 
         //obtinere email din token
-
-        String email = jwtTokenProvider.getEmail(token);
-
-//        if(email == null){
-//            model.addAttribute("msg", "Mai intai logheaza-te.");
-//            return AuthPages.login(model);
-//        }
+        System.out.println("ContentController - infoAccount");
+        System.out.println("ContentController - http requestul:" + req.getRequestURL());
+        String email = jwtTokenProvider.getEmail(jwtTokenProvider.getToken(req));
 
         User user = new User(userRepository.findByEmail(email).getFirstname(),
                 userRepository.findByEmail(email).getLastname(),

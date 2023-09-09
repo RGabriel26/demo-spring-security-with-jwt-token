@@ -56,8 +56,8 @@ public class InputInfoProcessing {
 
                 //return new ContentController(userRepository).infoAccount(model, token);
                 model.addAttribute("token", token);
-                return new ContentController(userRepository, jwtTokenProvider).infoAccount(model, token);
-                //return "index.html";
+//                return new ContentController(userRepository, jwtTokenProvider).infoAccount(model, token);
+                return "index.html";
             }
         }
 //        model.addAttribute("msg", "Nu s-a putut conecta.");

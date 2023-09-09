@@ -19,9 +19,10 @@ import java.util.Date;
 @Component
 public class JwtTokenProvider {
 
-    private String secretKey = "secretesgrbhbgsyerbgywrthi54t5849hweajrnfgrg1234";
 
-    private int validityInMilliseconds = 3600000; // adica o ora / 60 de minute
+    private String secretKey = "secretesgrbhbgsyerbgywrthi54t58498ki8gabi26";
+
+    private int validityInMilliseconds =3600000; // adica o ora / 60 de minute
 
     @Autowired
     private InfoUserDetailsService userDetailsService;
@@ -68,7 +69,7 @@ public class JwtTokenProvider {
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
-        System.out.println("Obtinerea subiectului din token: " + subject);
+        System.out.println("JwtTokenProvider - Obtinerea subiectului din token: " + subject);
         return subject;
     }
     //metoda care preia tokenul jwt din headerul http
@@ -83,8 +84,18 @@ public class JwtTokenProvider {
     //pentru verificarea daca tokenul nu este exprirat
     public boolean validateToken(String token){
         try{
-            Date expTime = new Date(Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJwt(token).getBody().getExpiration().getTime());
-            return new Date().before(expTime);
+            long token_expTime = Jwts.parserBuilder().setSigningKey(getSigningKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody()
+                    .getExpiration()
+                    .getTime();
+            Date expTime = new Date(token_expTime);
+            System.out.println("JwtTokenProvider - validateToken expTime: " + expTime);
+            return (new Date()).before(expTime);
+
+//            Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token).getBody().getExpiration();
+//            return true;
         }catch (JwtException | IllegalArgumentException e){
             System.out.println("JwtTokenProvider - validateToken");
             throw e;

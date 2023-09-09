@@ -23,46 +23,70 @@ public class WebSecurityConfiguration {
 
     private final JwtTokenProvider jwtTokenProvider;
 
+//
+//    @Bean
+//    @Order(1)
+//    public SecurityFilterChain allAccesChain(HttpSecurity http, MvcRequestMatcher.Builder mvc) throws Exception{
+//        http
+//                .securityMatchers((matchers) -> matchers
+//                        .requestMatchers(
+//                                mvc.pattern(HttpMethod.POST,"/post/**"),
+//                                mvc.pattern(HttpMethod.GET,"/auth/**"),
+//                                mvc.pattern("/h2/**")
+//                        )
+//
+//                )
+//
+//                .httpBasic(withDefaults());
+//
+//        return http.build();
+//    }
+//
+//    @Bean
+//    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+//        http
+//                .authorizeHttpRequests(request -> request
+////                        .anyRequest().authenticated()
+//
+//                          .anyRequest().authenticated()
+//
+//                )
+////                .formLogin(Customizer.withDefaults())
+//                .apply(new JwtTokenFilterConfigurer(jwtTokenProvider))
+//
+//        ;
+//        http.httpBasic(withDefaults());
+//
+//        return http.build();
+//    }
+
+
+
 
     @Bean
-    @Order(1)
-    public SecurityFilterChain allAccesChain(HttpSecurity http, MvcRequestMatcher.Builder mvc) throws Exception{
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, HandlerMappingIntrospector introspector) throws Exception {
+        MvcRequestMatcher.Builder mvcMatcherBuilder = new MvcRequestMatcher.Builder(introspector);
         http
-                .securityMatchers((matchers) -> matchers
-                        .requestMatchers(
-                                mvc.pattern(HttpMethod.POST,"/post/**"),
-                                mvc.pattern(HttpMethod.GET,"/auth/**"),
-                                mvc.pattern("/h2/**")
-                        )
-
+                .authorizeHttpRequests((authorizeHttpRequests) ->
+                        authorizeHttpRequests
+                                .requestMatchers(mvcMatcherBuilder.pattern("/post/**")).permitAll()
+                                .requestMatchers(mvcMatcherBuilder.pattern("/auth/**")).permitAll()
+                                .requestMatchers(mvcMatcherBuilder.pattern("/h2/**")).permitAll()
+                                .requestMatchers(mvcMatcherBuilder.pattern("/content/**")).authenticated()
                 )
-
-                .httpBasic(withDefaults());
-
-        return http.build();
-    }
-
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-                .authorizeHttpRequests(authorize -> authorize
-//                        .anyRequest().authenticated()
-                          .anyRequest().permitAll()
-
-                )
-//                .formLogin(Customizer.withDefaults())
+//                .formLogin((fromLogin) ->  fromLogin
+//                                .loginPage("/auth/login")
+//
+//                )
                 .apply(new JwtTokenFilterConfigurer(jwtTokenProvider))
-
         ;
-        http.httpBasic(withDefaults());
-
         return http.build();
     }
 
-    @Bean
-    MvcRequestMatcher.Builder mvc(HandlerMappingIntrospector introspector) {
-        return new MvcRequestMatcher.Builder(introspector);
-    }
+//    @Bean
+//    MvcRequestMatcher.Builder mvc(HandlerMappingIntrospector introspector) {
+//        return new MvcRequestMatcher.Builder(introspector);
+//    }
 
 
 

@@ -24,12 +24,21 @@ public class JwtFilterChain extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        System.out.println("JwtFilterChain");
+        System.out.println("\nJwtFilterChain");
         String token = jwtTokenProvider.getToken(request);
+        System.out.println("JwtFilterChain - tokenul obtinut: " + token);
+        if(token == null) {
+            System.out.println(" ");
+             }else{
+            System.out.println("JwtFilterChain - email ul obtinut din token: " + jwtTokenProvider.getEmail(token));
+            System.out.println("JwtFilterChain - token valid: " + jwtTokenProvider.validateToken(token));
+
+        }
         try{
             if (token != null && jwtTokenProvider.validateToken(token)) {
                 Authentication auth = jwtTokenProvider.getAuthentication(token);
                 SecurityContextHolder.getContext().setAuthentication(auth);
+                System.out.println("ContexHolder actualizat cu succes");
             }
         } catch (CustomException ex) {
             //this is very important, since it guarantees the user is not authenticated at all
