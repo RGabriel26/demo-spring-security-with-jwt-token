@@ -7,8 +7,9 @@
 
 <p th:text="${token}"></p>
 
-<button  th:href="@{/content/user}">Info User</button>
-
+<form action="#" th:action="@{/content/user}" method="get" >
+    <input type="submit" th:value="LOGIN" />
+</form>
 
 </body>
 </html>

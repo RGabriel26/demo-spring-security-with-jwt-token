@@ -108,9 +108,11 @@ public class JwtTokenProvider {
     public String getTokenFromCookie(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         String wantThisCookie = "jwt";
-        for (Cookie cookie : cookies) {
-            if (wantThisCookie.equals(cookie.getName())) {
-                return cookie.getValue();
+        if(cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (wantThisCookie.equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
             }
         }
         return null;

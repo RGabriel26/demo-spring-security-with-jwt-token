@@ -63,7 +63,7 @@ public class WebSecurityConfiguration {
                                 .requestMatchers(mvcMatcherBuilder.pattern("/post/**")).permitAll()
                                 .requestMatchers(mvcMatcherBuilder.pattern("/auth/**")).permitAll()
                                 .requestMatchers(mvcMatcherBuilder.pattern("/content/**")).authenticated()
-                                .anyRequest().permitAll()
+                                .anyRequest().authenticated()
                 )
 //                .formLogin((fromLogin) ->  fromLogin
 //                                .loginPage("/auth/login")

@@ -26,17 +26,6 @@ public class JwtFilterChain extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         System.out.println("\nJwtFilterChain");
 
-//        //caz cand tokenul este obtinut din header ul requestului
-//        String token = jwtTokenProvider.getToken(request);
-//        System.out.println("JwtFilterChain - tokenul obtinut: " + token);
-//        if(token == null) {
-//            System.out.println("JwtFilterChain = token null");
-//             }else{
-//            System.out.println("JwtFilterChain - email ul obtinut din token: " + jwtTokenProvider.getEmail(token));
-//            System.out.println("JwtFilterChain - token valid: " + jwtTokenProvider.validateToken(token));
-//
-//        }
-
         //caz cand tokenul este obtinut din cookies
         String token = jwtTokenProvider.getTokenFromCookie(request);
         System.out.println("JwtFilterChain - tokenul obtinut: " + token);
@@ -52,6 +41,7 @@ public class JwtFilterChain extends OncePerRequestFilter {
             if (token != null && jwtTokenProvider.validateToken(token)) {
                 Authentication auth = jwtTokenProvider.getAuthentication(token);
                 SecurityContextHolder.getContext().setAuthentication(auth);
+                System.out.println(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
                 System.out.println("JwtFilterChain - ContexHolder actualizat cu succes");
             }
         } catch (CustomException ex) {

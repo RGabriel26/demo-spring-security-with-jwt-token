@@ -32,13 +32,10 @@ public class ContentController {
     @GetMapping("/user")
 //    public String infoAccount(Model model, String token){
     public String infoAccount(Model model,
-                              HttpServletRequest req,
-                              @CookieValue(value = "jwt", defaultValue = "No token found in cookie") String cookieToken
-    ){
+                              HttpServletRequest req){
 
         System.out.println("ContentController - infoAccount");
         System.out.println("ContentController - http requestul:" + req.getRequestURL());
-        System.out.println("ContentController - tokenul din cookie: " + cookieToken);
 
         //obtinere email din token
         String email = jwtTokenProvider.getEmail(jwtTokenProvider.getTokenFromCookie(req));

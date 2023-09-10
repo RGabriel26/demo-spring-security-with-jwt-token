@@ -68,8 +68,10 @@ public class InputInfoProcessing {
 //                model.addAttribute("token", token);
 //                return "index.html";
 
-                redirectAttributes.addFlashAttribute("token", token);
-                return "redirect:/auth/token";
+//                redirectAttributes.addFlashAttribute("token", token);
+//                return "redirect:/auth/token";
+
+                return "redirect:/content/user";
             }
         }
 //        model.addAttribute("msg", "Nu s-a putut conecta.");
