@@ -51,7 +51,10 @@ public class InputInfoProcessing {
 
                 //salvarea tokenului in cookies
                 Cookie cookie = new Cookie("jwt", token);
-                cookie.setPath("/");
+                cookie.setPath("/content/user");
+                cookie.setMaxAge(60 * 60); //1 ora
+                cookie.setHttpOnly(true);
+
                 response.addCookie(cookie);
                 System.out.println("InputInfoProcessing - cookies salvate.");
 

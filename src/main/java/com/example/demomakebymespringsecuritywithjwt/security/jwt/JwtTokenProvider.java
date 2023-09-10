@@ -84,24 +84,27 @@ public class JwtTokenProvider {
     }
 
     //pentru verificarea daca tokenul nu este exprirat
-    public boolean validateToken(String token){
-        try{
-            long token_expTime = Jwts.parserBuilder().setSigningKey(getSigningKey())
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody()
-                    .getExpiration()
-                    .getTime();
-            Date expTime = new Date(token_expTime);
-            System.out.println("JwtTokenProvider - validateToken expTime: " + expTime);
-            return (new Date()).before(expTime);
+    public boolean validateToken(String token) {
+        if (token != null) {
+            try {
+                long token_expTime = Jwts.parserBuilder().setSigningKey(getSigningKey())
+                        .build()
+                        .parseClaimsJws(token)
+                        .getBody()
+                        .getExpiration()
+                        .getTime();
+                Date expTime = new Date(token_expTime);
+                System.out.println("JwtTokenProvider - validateToken expTime: " + expTime);
+                return (new Date()).before(expTime);
 
 //            Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token).getBody().getExpiration();
 //            return true;
-        }catch (JwtException | IllegalArgumentException e){
-            System.out.println("JwtTokenProvider - validateToken");
-            throw e;
+            } catch (JwtException | IllegalArgumentException e) {
+                System.out.println("JwtTokenProvider - validateToken");
+                throw e;
+            }
         }
+        return false;
     }
 
 

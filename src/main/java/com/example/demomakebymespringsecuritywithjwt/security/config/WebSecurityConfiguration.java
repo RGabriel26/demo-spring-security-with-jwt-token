@@ -62,7 +62,7 @@ public class WebSecurityConfiguration {
                         authorizeHttpRequests
                                 .requestMatchers(mvcMatcherBuilder.pattern("/post/**")).permitAll()
                                 .requestMatchers(mvcMatcherBuilder.pattern("/auth/**")).permitAll()
-                                .requestMatchers(mvcMatcherBuilder.pattern("/content/**")).authenticated()
+//                                .requestMatchers(mvcMatcherBuilder.pattern("/content/**")).authenticated()
                                 .anyRequest().authenticated()
                 )
 //                .formLogin((fromLogin) ->  fromLogin
