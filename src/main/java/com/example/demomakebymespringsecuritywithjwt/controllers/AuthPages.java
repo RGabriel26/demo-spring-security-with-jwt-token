@@ -2,6 +2,8 @@ package com.example.demomakebymespringsecuritywithjwt.controllers;
 
 import com.example.demomakebymespringsecuritywithjwt.models.request.LoginRequest;
 import com.example.demomakebymespringsecuritywithjwt.models.request.RegisterRequest;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +26,7 @@ public class AuthPages {
 
     @GetMapping("/token")
     public String token(Model model){
+
         return "index.html";
     }
 }

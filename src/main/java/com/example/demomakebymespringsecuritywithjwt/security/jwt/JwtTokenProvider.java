@@ -5,6 +5,7 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,9 +19,10 @@ import java.util.Date;
 @Component
 public class JwtTokenProvider {
 
-    //folisit pentru a crea o semnatura unica pentru fiecare start al aplicatiei
-    private final long startApp = new Date().getTime();
-    private final String secretKey = "secretesgrbhbgsyerbgywrthi54t58498ki8gabi26" + startApp;
+//    //folisit pentru a crea o semnatura unica pentru fiecare start al aplicatiei
+//    private final long startApp = new Date().getTime();
+//    private final String secretKey = "secretesgrbhbgsyerbgywrthi54t58498ki8gabi26" + startApp;
+    private final String secretKey = "secretesgrbhbgsyerbgywrthi54t58498ki8gabi26";
     private final int validityInMilliseconds =3600000; // adica o ora / 60 de minute
 
     @Autowired
@@ -103,5 +105,14 @@ public class JwtTokenProvider {
     }
 
 
-
+    public String getTokenFromCookie(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        String wantThisCookie = "jwt";
+        for (Cookie cookie : cookies) {
+            if (wantThisCookie.equals(cookie.getName())) {
+                return cookie.getValue();
+            }
+        }
+        return null;
+    }
 }

@@ -5,6 +5,8 @@ import com.example.demomakebymespringsecuritywithjwt.repositoy.UserRepository;
 import com.example.demomakebymespringsecuritywithjwt.models.request.RegisterRequest;
 import com.example.demomakebymespringsecuritywithjwt.security.jwt.JwtTokenProvider;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -37,14 +39,21 @@ public class InputInfoProcessing {
             //@ModelAttribute LoginRequest inputLog,
             @RequestParam String email,
             @RequestParam String password,
-            final RedirectAttributes redirectAttributes
+            final RedirectAttributes redirectAttributes,
+            Model model,
+            HttpServletResponse response
     ) {
-        System.out.println(email);
         if (userRepository.existsByEmail(email)) {
             if (userRepository.findByEmail(email).getPassword().equals(password)) {
 
                 //generare token
                 String token = jwtTokenProvider.createToken(email);
+
+                //salvarea tokenului in cookies
+                Cookie cookie = new Cookie("jwt", token);
+                cookie.setPath("/");
+                response.addCookie(cookie);
+                System.out.println("InputInfoProcessing - cookies salvate.");
 
                 //crearea instantei autenticata si adaugarea acesteia in securitycontexholder
                 Authentication auth = jwtTokenProvider.getAuthentication(token);
@@ -53,6 +62,8 @@ public class InputInfoProcessing {
 
                 //return new ContentController(userRepository).infoAccount(model, token);
                 //return new ContentController(userRepository, jwtTokenProvider).infoAccount(model, token);
+
+//                return new AuthPages().token(model, token, response);
 
 //                model.addAttribute("token", token);
 //                return "index.html";

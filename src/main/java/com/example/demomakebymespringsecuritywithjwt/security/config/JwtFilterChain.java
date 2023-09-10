@@ -25,16 +25,29 @@ public class JwtFilterChain extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         System.out.println("\nJwtFilterChain");
-        String token = jwtTokenProvider.getToken(request);
+
+//        //caz cand tokenul este obtinut din header ul requestului
+//        String token = jwtTokenProvider.getToken(request);
+//        System.out.println("JwtFilterChain - tokenul obtinut: " + token);
+//        if(token == null) {
+//            System.out.println("JwtFilterChain = token null");
+//             }else{
+//            System.out.println("JwtFilterChain - email ul obtinut din token: " + jwtTokenProvider.getEmail(token));
+//            System.out.println("JwtFilterChain - token valid: " + jwtTokenProvider.validateToken(token));
+//
+//        }
+
+        //caz cand tokenul este obtinut din cookies
+        String token = jwtTokenProvider.getTokenFromCookie(request);
         System.out.println("JwtFilterChain - tokenul obtinut: " + token);
         if(token == null) {
-            System.out.println(" ");
-             }else{
+            System.out.println("JwtFilterChain = token null");
+        }else{
             System.out.println("JwtFilterChain - email ul obtinut din token: " + jwtTokenProvider.getEmail(token));
             System.out.println("JwtFilterChain - token valid: " + jwtTokenProvider.validateToken(token));
 
         }
-        System.out.println("JwtFilterChain");
+
         try{
             if (token != null && jwtTokenProvider.validateToken(token)) {
                 Authentication auth = jwtTokenProvider.getAuthentication(token);
