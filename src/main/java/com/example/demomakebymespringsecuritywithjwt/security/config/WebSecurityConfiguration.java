@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -84,9 +85,20 @@ public class WebSecurityConfiguration {
 //                                .logoutUrl("/post/logout")
 //                                .clearAuthentication(true)
 //                                .permitAll())
+                .exceptionHandling((exceptionHandling) ->
+                        exceptionHandling
+                                .accessDeniedPage("/exception/forbidden"))
                 .apply(new JwtTokenFilterConfigurer(jwtTokenProvider))
         ;
         return http.build();
+    }
+
+        @Bean
+        public WebSecurityCustomizer webSecurityCustomizer(){
+            return (web) ->
+                    web.ignoring()
+                            .requestMatchers(new AntPathRequestMatcher("/h2-console/**"));
+        }
 
 
 //        http
@@ -108,7 +120,6 @@ public class WebSecurityConfiguration {
 //
 //                ;
 //        return http.build();
-    }
 
 
     @Bean
