@@ -87,20 +87,20 @@ public class JwtTokenProvider {
     public boolean validateToken(String token) {
         if (token != null) {
             try {
-                long token_expTime = Jwts.parserBuilder().setSigningKey(getSigningKey())
-                        .build()
-                        .parseClaimsJws(token)
-                        .getBody()
-                        .getExpiration()
-                        .getTime();
-                Date expTime = new Date(token_expTime);
-                System.out.println("JwtTokenProvider - validateToken expTime: " + expTime);
-                return (new Date()).before(expTime);
 
-//            Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token).getBody().getExpiration();
-//            return true;
+                    long token_expTime = Jwts.parserBuilder().setSigningKey(getSigningKey())
+                            .build()
+                            .parseClaimsJws(token)
+                            .getBody()
+                            .getExpiration()
+                            .getTime();
+
+                    Date expTime = new Date(token_expTime);
+                    System.out.println("JwtTokenProvider - validateToken expTime: " + expTime);
+                    return (new Date()).before(expTime);
+
             } catch (JwtException | IllegalArgumentException e) {
-                System.out.println("JwtTokenProvider - validateToken");
+                System.out.println("JwtTokenProvider - validateToken este null");
                 throw e;
             }
         }

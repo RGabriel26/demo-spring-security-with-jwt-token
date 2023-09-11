@@ -29,6 +29,7 @@ public class JwtFilterChain extends OncePerRequestFilter {
         //caz cand tokenul este obtinut din cookies
         String token = jwtTokenProvider.getTokenFromCookie(request);
 
+
         if(jwtTokenProvider.validateToken(token)) {
             System.out.println("JwtFilterChain - email ul obtinut din token: " + jwtTokenProvider.getEmail(token));
             System.out.println("JwtFilterChain - token valid: " + jwtTokenProvider.validateToken(token));

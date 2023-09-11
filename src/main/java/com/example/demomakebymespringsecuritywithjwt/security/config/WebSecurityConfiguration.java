@@ -10,7 +10,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.logout.CookieClearingLogoutHandler;
 import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
@@ -26,47 +25,9 @@ public class WebSecurityConfiguration {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
-//
-//    @Bean
-//    @Order(1)
-//    public SecurityFilterChain allAccesChain(HttpSecurity http, MvcRequestMatcher.Builder mvc) throws Exception{
-//        http
-//                .securityMatchers((matchers) -> matchers
-//                        .requestMatchers(
-//                                mvc.pattern(HttpMethod.POST,"/post/**"),
-//                                mvc.pattern(HttpMethod.GET,"/auth/**"),
-//                                mvc.pattern("/h2/**")
-//                        )
-//
-//                )
-//
-//                .httpBasic(withDefaults());
-//
-//        return http.build();
-//    }
-//
-//    @Bean
-//    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-//        http
-//                .authorizeHttpRequests(request -> request
-////                        .anyRequest().authenticated()
-//
-//                          .anyRequest().authenticated()
-//
-//                )
-////                .formLogin(Customizer.withDefaults())
-//                .apply(new JwtTokenFilterConfigurer(jwtTokenProvider))
-//
-//        ;
-//        http.httpBasic(withDefaults());
-//
-//        return http.build();
-//    }
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, HandlerMappingIntrospector introspector) throws Exception {
         MvcRequestMatcher.Builder mvcMatcherBuilder = new MvcRequestMatcher.Builder(introspector);
-        CookieClearingLogoutHandler cookies = new CookieClearingLogoutHandler("jwt");
         http
                 .authorizeHttpRequests((authorizeHttpRequests) ->
                         authorizeHttpRequests
@@ -75,16 +36,24 @@ public class WebSecurityConfiguration {
                                 .anyRequest().authenticated())
                 .formLogin((login) ->
                         login.loginPage("/auth/login")
-//                                .loginProcessingUrl("/post/requestInfoLogin")
                                 .defaultSuccessUrl("/content/user")
                                 .permitAll())
-//                .logout((logout) ->
-//                        logout
-//                                .deleteCookies("JSESSIONID")
-//                                .deleteCookies("jwt")
+
+//                .logout((logout) ->logout
 //                                .logoutUrl("/post/logout")
+//                                .addLogoutHandler((request, response, authentication) -> {
+//                                    for(Cookie cookie : request.getCookies()) {
+//                                        String cookieName = cookie.getName();
+//                                        Cookie cookieToDelete = new Cookie(cookieName, null);
+//                                        cookieToDelete.setMaxAge(0);
+//                                        cookieToDelete.setPath("/content/user");
+//                                        response.addCookie(cookieToDelete);
+//                                        System.out.println("WebSecurityConfiguration - cookiuri sterse cu succes.");
+//                                    }
+//                                })
 //                                .clearAuthentication(true)
-//                                .permitAll())
+//                )
+
                 .exceptionHandling((exceptionHandling) ->
                         exceptionHandling
                                 .accessDeniedPage("/exception/forbidden"))
@@ -99,28 +68,6 @@ public class WebSecurityConfiguration {
                     web.ignoring()
                             .requestMatchers(new AntPathRequestMatcher("/h2-console/**"));
         }
-
-
-//        http
-//                .authorizeHttpRequests((authorizeHttpRequests) ->
-//                        authorizeHttpRequests.requestMatchers("/post/**").permitAll()
-//                                .requestMatchers("/auth/**").permitAll()
-//                                .anyRequest().authenticated())
-//                .formLogin((login) ->
-//                        login.loginPage("/auth/login")
-//                                .loginProcessingUrl("/post/requestInfoLogin")
-//                                .defaultSuccessUrl("/content/user",true)
-//                                .permitAll())
-//                .logout((logout) ->
-//                        logout.deleteCookies("JSESSIONID")
-//                                .invalidateHttpSession(true)
-//                                .clearAuthentication(true)
-//                                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-//                                .logoutSuccessUrl("/auth/login?logout"))
-//
-//                ;
-//        return http.build();
-
 
     @Bean
     public PasswordEncoder passwordEncoder() {
