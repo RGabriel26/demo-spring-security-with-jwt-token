@@ -1,21 +1,29 @@
 package com.example.demomakebymespringsecuritywithjwt.security.config;
 
 import com.example.demomakebymespringsecuritywithjwt.security.jwt.JwtTokenProvider;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.logout.CookieClearingLogoutHandler;
 import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 @Configuration
 @EnableWebSecurity
-@RequiredArgsConstructor
 public class WebSecurityConfiguration {
 
+    @Autowired
     private final JwtTokenProvider jwtTokenProvider;
+
+    public WebSecurityConfiguration(JwtTokenProvider jwtTokenProvider) {
+        this.jwtTokenProvider = jwtTokenProvider;
+    }
 
 //
 //    @Bean
@@ -57,35 +65,56 @@ public class WebSecurityConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, HandlerMappingIntrospector introspector) throws Exception {
         MvcRequestMatcher.Builder mvcMatcherBuilder = new MvcRequestMatcher.Builder(introspector);
+        CookieClearingLogoutHandler cookies = new CookieClearingLogoutHandler("jwt");
         http
                 .authorizeHttpRequests((authorizeHttpRequests) ->
                         authorizeHttpRequests
                                 .requestMatchers(mvcMatcherBuilder.pattern("/post/**")).permitAll()
                                 .requestMatchers(mvcMatcherBuilder.pattern("/auth/**")).permitAll()
-//                                .requestMatchers(mvcMatcherBuilder.pattern("/content/**")).authenticated()
-                                .anyRequest().authenticated()
-                )
-//                .formLogin((fromLogin) ->  fromLogin
-//                                .loginPage("/auth/login")
-//
-//                )
-
+                                .anyRequest().authenticated())
+                .formLogin((login) ->
+                        login.loginPage("/auth/login")
+//                                .loginProcessingUrl("/post/requestInfoLogin")
+                                .defaultSuccessUrl("/content/user")
+                                .permitAll())
+//                .logout((logout) ->
+//                        logout
+//                                .deleteCookies("JSESSIONID")
+//                                .deleteCookies("jwt")
+//                                .logoutUrl("/post/logout")
+//                                .clearAuthentication(true)
+//                                .permitAll())
                 .apply(new JwtTokenFilterConfigurer(jwtTokenProvider))
         ;
         return http.build();
+
+
+//        http
+//                .authorizeHttpRequests((authorizeHttpRequests) ->
+//                        authorizeHttpRequests.requestMatchers("/post/**").permitAll()
+//                                .requestMatchers("/auth/**").permitAll()
+//                                .anyRequest().authenticated())
+//                .formLogin((login) ->
+//                        login.loginPage("/auth/login")
+//                                .loginProcessingUrl("/post/requestInfoLogin")
+//                                .defaultSuccessUrl("/content/user",true)
+//                                .permitAll())
+//                .logout((logout) ->
+//                        logout.deleteCookies("JSESSIONID")
+//                                .invalidateHttpSession(true)
+//                                .clearAuthentication(true)
+//                                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+//                                .logoutSuccessUrl("/auth/login?logout"))
+//
+//                ;
+//        return http.build();
     }
 
-//    @Bean
-//    MvcRequestMatcher.Builder mvc(HandlerMappingIntrospector introspector) {
-//        return new MvcRequestMatcher.Builder(introspector);
-//    }
 
-
-
-//    @Bean
-//    public PasswordEncoder passwordEncoder() {
-//        return new BCryptPasswordEncoder(12);
-//    }
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
 
 }

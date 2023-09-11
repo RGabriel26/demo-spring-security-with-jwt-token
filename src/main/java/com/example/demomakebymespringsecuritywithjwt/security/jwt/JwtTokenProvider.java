@@ -20,9 +20,9 @@ import java.util.Date;
 public class JwtTokenProvider {
 
 //    //folisit pentru a crea o semnatura unica pentru fiecare start al aplicatiei
-//    private final long startApp = new Date().getTime();
-//    private final String secretKey = "secretesgrbhbgsyerbgywrthi54t58498ki8gabi26" + startApp;
-    private final String secretKey = "secretesgrbhbgsyerbgywrthi54t58498ki8gabi26";
+    private final long startApp = new Date().getTime();
+    private final String secretKey = "secretesgrbhbgsyerbgywrthi54t58498ki8gabi26" + startApp;
+//    private final String secretKey = "secretesgrbhbgsyerbgywrthi54t58498ki8gabi26";
     private final int validityInMilliseconds =3600000; // adica o ora / 60 de minute
 
     @Autowired

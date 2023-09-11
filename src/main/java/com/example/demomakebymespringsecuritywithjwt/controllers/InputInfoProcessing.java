@@ -6,10 +6,12 @@ import com.example.demomakebymespringsecuritywithjwt.models.request.RegisterRequ
 import com.example.demomakebymespringsecuritywithjwt.security.jwt.JwtTokenProvider;
 
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.Arrays;
 
 
 @Controller
@@ -32,7 +35,6 @@ public class InputInfoProcessing {
     public InputInfoProcessing(JwtTokenProvider jwtTokenProvider) {
         this.jwtTokenProvider = jwtTokenProvider;
     }
-
 
     @PostMapping("/requestInfoLogin")
     public String requestInfoLogin(
@@ -58,27 +60,9 @@ public class InputInfoProcessing {
                 response.addCookie(cookie);
                 System.out.println("InputInfoProcessing - cookies salvate.");
 
-                //crearea instantei autenticata si adaugarea acesteia in securitycontexholder
-                Authentication auth = jwtTokenProvider.getAuthentication(token);
-                SecurityContextHolder.getContext().setAuthentication(auth);
-
-
-                //return new ContentController(userRepository).infoAccount(model, token);
-                //return new ContentController(userRepository, jwtTokenProvider).infoAccount(model, token);
-
-//                return new AuthPages().token(model, token, response);
-
-//                model.addAttribute("token", token);
-//                return "index.html";
-
-//                redirectAttributes.addFlashAttribute("token", token);
-//                return "redirect:/auth/token";
-
                 return "redirect:/content/user";
             }
         }
-//        model.addAttribute("msg", "Nu s-a putut conecta.");
-//        return AuthPages.login(model);
 
         redirectAttributes.addFlashAttribute("msg", "Nu s-a putut conecta.");
         return "redirect:/auth/login";
@@ -101,5 +85,16 @@ public class InputInfoProcessing {
         redirectAttributes.addFlashAttribute("msg", "Inregistrat cu succes!");
         return "redirect:/auth/login";
     }
+
+    @PostMapping("/logout")
+    public String logout(HttpServletRequest request){
+
+        System.out.println("InputInfoProcessing - logout");
+
+        System.out.println(request.getCookies().length);
+
+        return "redirect:/auth/login";
+    }
+
 
 }
